@@ -1,48 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Send SMS Form</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Picture Upload</title>
 </head>
 <body>
-    <h2>Send SMS</h2>
-    <form id="smsForm">
-        <label for="phoneNumber">Phone Number:</label><br>
-        <input type="text" id="phoneNumber" name="phoneNumber" required><br><br>
+    <h2>Upload Profile Picture</h2>
+    <form id="profilePictureForm" enctype="multipart/form-data">
+        <label for="profilePicture">Choose a picture:</label><br>
+        <input type="file" id="profilePicture" name="profilePicture" accept="image/*" required><br><br>
 
-        <label for="message">Message:</label><br>
-        <textarea id="message" name="message" rows="4" cols="50" required></textarea><br><br>
-
-        <input type="submit" value="Send SMS">
+        <input type="submit" value="Upload Picture">
     </form>
 
+    <div id="message"></div>
+
     <script>
-        document.getElementById('smsForm').addEventListener('submit', function(event) {
+        document.getElementById('profilePictureForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            const message = document.getElementById('message').value;
+            const formData = new FormData();
+            const fileInput = document.getElementById('profilePicture');
 
-            fetch('https://api.infobip.com/sms/1/text/single', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer 7c6820d8cb2e27e09f947f6e5d8d656c-1fe0c153-0424-4cc9-b40f-e58f1ad9de38'
-                },
-                body: JSON.stringify({
-                    from: '070950924',
-                    to: 078699566,
-                    text: message
+            if (fileInput.files.length > 0) {
+                formData.append('profilePicture', fileInput.files[0]);
+
+                fetch('/upload-profile-picture', {
+                    method: 'POST',
+                    body: formData
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('SMS sent successfully!');
-                console.log(data);
-            })
-            .catch(error => {
-                alert('Error sending SMS');
-                console.error('Error:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('message').innerHTML = data.message;
+                })
+                .catch(error => {
+                    document.getElementById('message').innerHTML = 'Error uploading profile picture';
+                    console.error('Error:', error);
+                });
+            } else {
+                document.getElementById('message').innerHTML = 'Please choose a picture to upload';
+            }
         });
     </script>
 </body>
