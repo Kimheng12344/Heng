@@ -1,1 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Send SMS Form</title>
+</head>
+<body>
+    <h2>Send SMS</h2>
+    <form id="smsForm">
+        <label for="phoneNumber">Phone Number:</label><br>
+        <input type="text" id="phoneNumber" name="phoneNumber" required><br><br>
 
+        <label for="message">Message:</label><br>
+        <textarea id="message" name="message" rows="4" cols="50" required></textarea><br><br>
+
+        <input type="submit" value="Send SMS">
+    </form>
+
+    <script>
+        document.getElementById('smsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const message = document.getElementById('message').value;
+
+            fetch('https://api.infobip.com/sms/1/text/single', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer 7c6820d8cb2e27e09f947f6e5d8d656c-1fe0c153-0424-4cc9-b40f-e58f1ad9de38'
+                },
+                body: JSON.stringify({
+                    from: '070950924',
+                    to: 078699566,
+                    text: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('SMS sent successfully!');
+                console.log(data);
+            })
+            .catch(error => {
+                alert('Error sending SMS');
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
